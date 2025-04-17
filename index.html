@@ -97,30 +97,24 @@
   </div>
 
   <script>
-    // ✅ Set your actual local IP address here:
-    const localIP = "192.168.78.49";
+    const localIP = "192.168.78.49"; // ← මෙක ඔබේ real IP එක
 
-    // Detect if it's a mobile device
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const apiHost = isMobile
-      ? `http://${localIP}:5000`
-      : `http://127.0.0.1:5000`;
-
+    const apiHost = `http://${localIP}:5000`; // mobile + desktop එකට common එකක්
+  
     async function sendMessage() {
       const input = document.getElementById('userInput');
       const chatBox = document.getElementById('chatBox');
       const message = input.value;
-
+  
       if (!message.trim()) return;
-
+  
       const userMessage = document.createElement("div");
       userMessage.className = "message user";
       userMessage.innerText = message;
       chatBox.appendChild(userMessage);
       chatBox.scrollTop = chatBox.scrollHeight;
-
       input.value = "";
-
+  
       try {
         const response = await fetch(`${apiHost}/ask`, {
           method: "POST",
@@ -129,7 +123,7 @@
           },
           body: JSON.stringify({ question: message })
         });
-
+  
         const data = await response.json();
         const botMessage = document.createElement("div");
         botMessage.className = "message bot";
@@ -139,7 +133,7 @@
       } catch (error) {
         const errorMessage = document.createElement("div");
         errorMessage.className = "message bot";
-        errorMessage.innerText = "⚠️ Server unreachable. Make sure the Flask server is running.";
+        errorMessage.innerText = "⚠️ Server unreachable. Make sure the Flask server is running and connected to same Wi-Fi.";
         chatBox.appendChild(errorMessage);
         chatBox.scrollTop = chatBox.scrollHeight;
       }
