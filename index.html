@@ -13,30 +13,30 @@
     }
 
     .chat-container {
-    width: 100%;
-    max-width: 500px;
-    height: 95vh;
-    margin: 10px auto;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    overflow: hidden;
-  }
-  
-    
+      width: 100%;
+      max-width: 500px;
+      height: 95vh;
+      margin: 10px auto;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
     .chat-box {
       flex-grow: 1;
       padding: 20px;
       overflow-y: auto;
-      height: 400px;
     }
+
     .input-area {
       display: flex;
       padding: 10px;
       border-top: 1px solid #ccc;
     }
+
     input {
       flex-grow: 1;
       padding: 10px;
@@ -45,6 +45,7 @@
       background-color: #f0f0f0;
       margin-right: 10px;
     }
+
     button {
       padding: 10px 15px;
       border: none;
@@ -53,20 +54,24 @@
       color: white;
       cursor: pointer;
     }
+
     .message {
       margin-bottom: 10px;
       padding: 10px;
       border-radius: 10px;
       max-width: 80%;
     }
+
     .user {
       background-color: #dcf8c6;
       align-self: flex-end;
     }
+
     .bot {
       background-color: #f1f0f0;
       align-self: flex-start;
     }
+
     .back-button {
       margin: 10px auto;
       padding: 8px 20px;
@@ -92,6 +97,15 @@
   </div>
 
   <script>
+    // ✅ Set your actual local IP address here:
+    const localIP = "192.168.1.5";
+
+    // Detect if it's a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const apiHost = isMobile
+      ? `http://${localIP}:5000`
+      : `http://127.0.0.1:5000`;
+
     async function sendMessage() {
       const input = document.getElementById('userInput');
       const chatBox = document.getElementById('chatBox');
@@ -107,20 +121,28 @@
 
       input.value = "";
 
-      const response = await fetch("http://127.0.0.1:5000/ask", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ question: message })
-      });
+      try {
+        const response = await fetch(`${apiHost}/ask`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ question: message })
+        });
 
-      const data = await response.json();
-      const botMessage = document.createElement("div");
-      botMessage.className = "message bot";
-      botMessage.innerText = data.answer;
-      chatBox.appendChild(botMessage);
-      chatBox.scrollTop = chatBox.scrollHeight;
+        const data = await response.json();
+        const botMessage = document.createElement("div");
+        botMessage.className = "message bot";
+        botMessage.innerText = data.answer;
+        chatBox.appendChild(botMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (error) {
+        const errorMessage = document.createElement("div");
+        errorMessage.className = "message bot";
+        errorMessage.innerText = "⚠️ Server unreachable. Make sure the Flask server is running.";
+        chatBox.appendChild(errorMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
     }
   </script>
 </body>
